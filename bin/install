@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+const EventEmitter = require('events').EventEmitter;
+const minimist = require('minimist');
+const chalk = require('chalk');
+const install = require('../lib/install');
+
+const args = minimist(process.argv);
+const projectDir = args['project-dir'] || process.cwd().replace(/(.+[/\\])node_modules.+/, '$1');
+const pluginId = args['plugin'] || args.p;
+const updateTiApp = args['tiapp'];
+const logger = new EventEmitter();
+
+logger.on('log', message => {
+  console.log(chalk.green(message));
+});
+
+logger.on('error', (message, error) => {
+  console.error(chalk.red(message));
+  if (error instanceof Error) {
+    console.error(chalk.red('Reason:'));
+    console.error(chalk.red(error));
+  }
+});
+
+install(projectDir, pluginId, updateTiApp, logger);
